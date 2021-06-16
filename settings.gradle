@@ -1,0 +1,3 @@
+rootProject.name = 'pawned-root'
+
+include 'pawned'

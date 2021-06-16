@@ -1,0 +1,10 @@
+apply plugin: "kotlin"
+apply plugin: "com.ncorti.ktfmt.gradle"
+
+dependencies {
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+}
+
+test {
+    useJUnitPlatform()
+}
