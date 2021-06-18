@@ -4,6 +4,7 @@ import kotlin.math.abs
 
 internal class King : Piece {
   override fun tryMove(gameInfo: GameInfo, from: Coord, to: Coord, color: Color): GameInfo? {
+    // TODO("implement castling")
     if (color == Color.WHITE && gameInfo.whitePieces.containsKey(to) ||
         color == Color.BLACK && gameInfo.blackPieces.containsKey(to)) {
       return null

@@ -16,7 +16,7 @@ internal fun movePiece(
         Color.WHITE ->
             Pair(gameInfo.whitePieces - from + Pair(to, piece), gameInfo.blackPieces - to)
         Color.BLACK ->
-            Pair(gameInfo.blackPieces - from + Pair(to, piece), gameInfo.whitePieces - to)
+            Pair(gameInfo.whitePieces - to, gameInfo.blackPieces - from + Pair(to, piece))
       }
 
   return GameInfo(whitePieces, blackPieces)
