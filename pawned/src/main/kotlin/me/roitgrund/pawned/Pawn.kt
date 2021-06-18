@@ -42,7 +42,10 @@ internal class Pawn : Piece {
       }
       movingUpTwoRanks -> {
         GameInfo(
-            nextGameInfo.whitePieces, nextGameInfo.blackPieces, Coord(to.file, to.rank - rankDelta))
+            nextGameInfo.whitePieces,
+            nextGameInfo.blackPieces,
+            gameInfo.castlingInfo,
+            Coord(to.file, to.rank - rankDelta))
       }
       else -> {
         nextGameInfo

@@ -19,5 +19,5 @@ internal fun movePiece(
             Pair(gameInfo.whitePieces - to, gameInfo.blackPieces - from + Pair(to, piece))
       }
 
-  return GameInfo(whitePieces, blackPieces)
+  return GameInfo(whitePieces, blackPieces, gameInfo.castlingInfo)
 }

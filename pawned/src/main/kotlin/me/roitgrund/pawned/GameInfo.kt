@@ -3,7 +3,8 @@ package me.roitgrund.pawned
 internal data class GameInfo(
     val whitePieces: Map<Coord, Piece>,
     val blackPieces: Map<Coord, Piece>,
-    val enPassant: Coord? = null
+    val castlingInfo: CastlingInfo = CastlingInfo(),
+    val enPassant: Coord? = null,
 ) {
   constructor() :
       this(
@@ -41,4 +42,6 @@ internal data class GameInfo(
       Coord("f7") to Pawn(),
       Coord("g7") to Pawn(),
       Coord("h7") to Pawn()))
+
+  val allPieceCoordinates: Set<Coord> by lazy { whitePieces.keys.union(blackPieces.keys) }
 }

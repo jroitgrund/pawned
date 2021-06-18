@@ -15,6 +15,29 @@ internal class Rook : Piece {
       return null
     }
 
-    return movePiece(this, gameInfo, from, to, color)
+    val nextGameInfo = movePiece(this, gameInfo, from, to, color)
+    return when (from) {
+      Coord("a1") ->
+          GameInfo(
+              nextGameInfo.whitePieces,
+              nextGameInfo.blackPieces,
+              nextGameInfo.castlingInfo.moveWhiteQueenSideRook())
+      Coord("h1") ->
+          GameInfo(
+              nextGameInfo.whitePieces,
+              nextGameInfo.blackPieces,
+              nextGameInfo.castlingInfo.moveWhiteKingSideRook())
+      Coord("a8") ->
+          GameInfo(
+              nextGameInfo.whitePieces,
+              nextGameInfo.blackPieces,
+              nextGameInfo.castlingInfo.moveBlackQueenSideRook())
+      Coord("h8") ->
+          GameInfo(
+              nextGameInfo.whitePieces,
+              nextGameInfo.blackPieces,
+              nextGameInfo.castlingInfo.moveBlackKingSideRook())
+      else -> nextGameInfo
+    }
   }
 }

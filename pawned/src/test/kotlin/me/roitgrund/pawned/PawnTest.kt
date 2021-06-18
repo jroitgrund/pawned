@@ -17,7 +17,11 @@ internal class PawnTest {
         GameInfo(mapOf(Coord("b3") to whitePawn), mapOf(Coord("a3") to blackPawn)),
         whitePawn.tryMove(gameInfo, Coord("b2"), Coord("b3"), Color.WHITE))
     assertEquals(
-        GameInfo(mapOf(Coord("b4") to whitePawn), mapOf(Coord("a3") to blackPawn), Coord("b3")),
+        GameInfo(
+            mapOf(Coord("b4") to whitePawn),
+            mapOf(Coord("a3") to blackPawn),
+            CastlingInfo(),
+            Coord("b3")),
         whitePawn.tryMove(gameInfo, Coord("b2"), Coord("b4"), Color.WHITE))
     assertEquals(
         GameInfo(mapOf(Coord("a3") to whitePawn), mapOf()),
@@ -32,7 +36,11 @@ internal class PawnTest {
     assertEquals(
         GameInfo(mapOf(Coord("b7") to whitePawn), mapOf()),
         whitePawn.tryMove(
-            GameInfo(mapOf(Coord("a6") to whitePawn), mapOf(Coord("b6") to blackPawn), Coord("b7")),
+            GameInfo(
+                mapOf(Coord("a6") to whitePawn),
+                mapOf(Coord("b6") to blackPawn),
+                CastlingInfo(),
+                Coord("b7")),
             Coord("a6"),
             Coord("b7"),
             Color.WHITE))
