@@ -24,4 +24,8 @@ allprojects {
 subprojects {
     apply plugin: 'kotlin'
     apply plugin: 'com.ncorti.ktfmt.gradle'
+
+    dependencyLocking {
+        lockAllConfigurations()
+    }
 }
