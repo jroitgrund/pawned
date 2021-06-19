@@ -1,7 +1,17 @@
 package me.roitgrund.pawned
 
+enum class PieceType {
+  ROOK,
+  KNIGHT,
+  BISHOP,
+  QUEEN,
+  KING,
+  PAWN
+}
+
 internal interface Piece {
   fun tryMove(gameInfo: GameInfo, from: Coord, to: Coord, color: Color): GameInfo?
+  val pieceType: PieceType
 }
 
 internal fun movePiece(

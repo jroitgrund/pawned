@@ -122,4 +122,6 @@ internal class King : Piece {
               nextGameInfo.castlingInfo.moveBlackKing())
     }
   }
+
+  override val pieceType = PieceType.KING
 }

@@ -18,4 +18,6 @@ internal class Knight : Piece {
 
     return movePiece(this, gameInfo, from, to, color)
   }
+
+  override val pieceType = PieceType.KNIGHT
 }

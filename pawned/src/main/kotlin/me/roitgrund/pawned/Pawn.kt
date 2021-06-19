@@ -52,4 +52,6 @@ internal class Pawn : Piece {
       }
     }
   }
+
+  override val pieceType = PieceType.PAWN
 }

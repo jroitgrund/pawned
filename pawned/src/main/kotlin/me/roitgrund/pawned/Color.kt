@@ -1,6 +1,6 @@
 package me.roitgrund.pawned
 
-internal enum class Color {
+enum class Color {
   BLACK,
   WHITE
 }

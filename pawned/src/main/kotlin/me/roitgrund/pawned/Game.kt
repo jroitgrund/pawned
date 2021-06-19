@@ -6,6 +6,11 @@ class Game {
 
   private var gameInfo = GameInfo()
 
+  val whitePieces
+    get() = gameInfo.whitePieces.map { (coord, piece) -> (coord to piece.pieceType) }
+  val blackPieces
+    get() = gameInfo.blackPieces.map { (coord, piece) -> (coord to piece.pieceType) }
+
   fun attemptMove(from: Coord, to: Coord): Boolean {
     val (piece, color) =
         when (nextTurnState) {

@@ -40,4 +40,6 @@ internal class Rook : Piece {
       else -> nextGameInfo
     }
   }
+
+  override val pieceType = PieceType.ROOK
 }
