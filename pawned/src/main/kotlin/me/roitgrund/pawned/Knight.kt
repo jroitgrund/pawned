@@ -1,6 +1,8 @@
 package me.roitgrund.pawned
 
 import kotlin.math.abs
+import me.roitgrund.pawned.api.Color
+import me.roitgrund.pawned.api.PieceType
 
 internal class Knight : Piece {
   override fun tryMove(gameInfo: GameInfo, from: Coord, to: Coord, color: Color): GameInfo? {

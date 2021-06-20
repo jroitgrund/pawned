@@ -1,5 +1,9 @@
 package me.roitgrund.pawned
 
+import me.roitgrund.pawned.api.Color
+import me.roitgrund.pawned.api.NextTurnState
+import me.roitgrund.pawned.api.PieceType
+
 internal data class CheckInfo(
     val piecesToCheckForKingAggression: Map<Coord, Piece>,
     val piecesToFindKingIn: Map<Coord, Piece>,
@@ -63,7 +67,9 @@ class Game {
     gameInfo = nextGameInfo
     nextTurnState = turnState
 
-    if (ALL_COORDS.all { from -> ALL_COORDS.all { to -> attemptMove(from, to) == null } }) {
+    if (ALL_COORDS.all { fromCoord ->
+      ALL_COORDS.all { toCoord -> attemptMove(fromCoord, toCoord) == null }
+    }) {
       nextTurnState =
           if (isCurrentPlayerInCheck(gameInfo)) {
             when (nextTurnState) {

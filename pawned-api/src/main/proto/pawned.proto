@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package me.roitgrund.pawned.api;
+
+option java_multiple_files = true;
+
+message NewGameRequest {
+}
+
+message NewGameResponse {
+    string id = 1;
+}
+
+message MoveRequest {
+    string id = 1;
+    string from_coord = 2;
+    string to_coord = 3;
+}
+
+message GetGameRequest {
+    string id = 1;
+}
+
+enum Color {
+    WHITE = 0;
+    BLACK = 1;
+}
+
+enum PieceType {
+    ROOK = 0;
+    KNIGHT = 1;
+    BISHOP = 2;
+    QUEEN = 3;
+    KING = 4;
+    PAWN = 5;
+}
+
+enum NextTurnState {
+    WHITE_TO_PLAY = 0;
+    BLACK_TO_PLAY = 1;
+    WHITE_WON = 2;
+    BLACK_WON = 3;
+    STALEMATE = 4;
+}
+
+message WaitingForGame {
+}
+
+message GameInfo {
+    NextTurnState next_turn_state = 1;
+    repeated Piece white_pieces = 2;
+    repeated Piece black_pieces = 3;
+    Color player_color = 4;
+}
+
+message Piece {
+    PieceType piece_type = 1;
+    string coord = 2;
+}
+
+message GameResponse {
+    oneof game_state {
+        WaitingForGame waiting_for_game = 1;
+        GameInfo game_info = 2;
+    }
+}
+
+service PawnedService {
+    rpc NewGame (NewGameRequest) returns (NewGameResponse) {
+    }
+    rpc GetGame (GetGameRequest) returns (GameResponse) {
+    }
+    rpc Move (MoveRequest) returns (GameResponse) {
+
+    }
+}

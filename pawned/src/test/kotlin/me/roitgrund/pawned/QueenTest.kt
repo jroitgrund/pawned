@@ -1,6 +1,9 @@
 package me.roitgrund.pawned
 
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import me.roitgrund.pawned.api.Color
 
 private val whiteQueen = Queen()
 private val whitePawn = Pawn()

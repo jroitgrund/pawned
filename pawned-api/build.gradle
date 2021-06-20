@@ -1,0 +1,42 @@
+apply plugin: 'com.google.protobuf'
+
+protobuf {
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:${libs.versions.grpc.get()}"
+        }
+    }
+    protoc {
+        artifact = "com.google.protobuf:protoc:${libs.versions.protobuf.get()}"
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option "lite"
+                }
+            }
+            task.plugins {
+                grpc {
+                    option "lite"
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    api libs.protobuf.lite
+    api libs.grpc.lite
+    api libs.grpc.stub
+    compileOnly libs.annotations
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'build/generated/source/proto/main/grpc'
+            srcDirs 'build/generated/source/proto/main/java'
+        }
+    }
+}
