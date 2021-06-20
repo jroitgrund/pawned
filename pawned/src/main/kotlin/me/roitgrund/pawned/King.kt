@@ -9,16 +9,13 @@ internal class King : Piece {
       return null
     }
 
-    val rankDiff = abs(from.rank - to.rank)
-    val fileDiff = abs(from.file.code - to.file.code)
-
     if (from == Coord("e1") && to == Coord("c1")) {
       if (gameInfo.castlingInfo.whiteKingMoved ||
           gameInfo.castlingInfo.whiteQueenSideRookMoved ||
           sequenceOf(Coord("b1"), Coord("c1"), Coord("d1")).any {
             gameInfo.allPieceCoordinates.contains(it)
           } ||
-          sequenceOf(Coord("c1"), Coord("d1"), Coord("e1")).any { targetCoord ->
+          sequenceOf(Coord("d1"), Coord("e1")).any { targetCoord ->
             gameInfo.blackPieces.any { (pieceCoord, piece) ->
               piece.tryMove(gameInfo, pieceCoord, targetCoord, Color.BLACK) != null
             }
@@ -39,8 +36,8 @@ internal class King : Piece {
     if (from == Coord("e1") && to == Coord("g1")) {
       if (gameInfo.castlingInfo.whiteKingMoved ||
           gameInfo.castlingInfo.whiteQueenSideRookMoved ||
-          sequenceOf(Coord("g1"), Coord("f1")).any { gameInfo.allPieceCoordinates.contains(it) } ||
-          sequenceOf(Coord("e1"), Coord("g1"), Coord("f1")).any { targetCoord ->
+          sequenceOf(Coord("f1"), Coord("g1")).any { gameInfo.allPieceCoordinates.contains(it) } ||
+          sequenceOf(Coord("e1"), Coord("f1")).any { targetCoord ->
             gameInfo.blackPieces.any { (pieceCoord, piece) ->
               piece.tryMove(gameInfo, pieceCoord, targetCoord, Color.BLACK) != null
             }
@@ -64,7 +61,7 @@ internal class King : Piece {
           sequenceOf(Coord("b8"), Coord("c8"), Coord("d8")).any {
             gameInfo.allPieceCoordinates.contains(it)
           } ||
-          sequenceOf(Coord("c8"), Coord("d8"), Coord("e8")).any { targetCoord ->
+          sequenceOf(Coord("d8"), Coord("e8")).any { targetCoord ->
             gameInfo.blackPieces.any { (pieceCoord, piece) ->
               piece.tryMove(gameInfo, pieceCoord, targetCoord, Color.BLACK) != null
             }
@@ -85,8 +82,8 @@ internal class King : Piece {
     if (from == Coord("e8") && to == Coord("g8")) {
       if (gameInfo.castlingInfo.blackKingMoved ||
           gameInfo.castlingInfo.blackKingSideRookMoved ||
-          sequenceOf(Coord("g8"), Coord("f8")).any { gameInfo.allPieceCoordinates.contains(it) } ||
-          sequenceOf(Coord("e8"), Coord("g8"), Coord("f8")).any { targetCoord ->
+          sequenceOf(Coord("f8"), Coord("g8")).any { gameInfo.allPieceCoordinates.contains(it) } ||
+          sequenceOf(Coord("e8"), Coord("f8")).any { targetCoord ->
             gameInfo.blackPieces.any { (pieceCoord, piece) ->
               piece.tryMove(gameInfo, pieceCoord, targetCoord, Color.BLACK) != null
             }
@@ -103,6 +100,9 @@ internal class King : Piece {
             gameInfo.castlingInfo.moveBlackKing())
       }
     }
+
+    val rankDiff = abs(from.rank - to.rank)
+    val fileDiff = abs(from.file.code - to.file.code)
 
     if (rankDiff > 1 || fileDiff > 1) {
       return null

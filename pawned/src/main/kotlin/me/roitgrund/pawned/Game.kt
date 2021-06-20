@@ -64,17 +64,16 @@ class Game {
     nextTurnState = turnState
 
     if (ALL_COORDS.all { from -> ALL_COORDS.all { to -> attemptMove(from, to) == null } }) {
-      val checkInfoForCurrentPlayer = checkInfoForCurrentPlayer(gameInfo)
-      if (isInCheck(checkInfoForCurrentPlayer, gameInfo)) {
-        nextTurnState =
+      nextTurnState =
+          if (isCurrentPlayerInCheck(gameInfo)) {
             when (nextTurnState) {
               NextTurnState.WHITE_TO_PLAY -> NextTurnState.BLACK_WON
               NextTurnState.BLACK_TO_PLAY -> NextTurnState.WHITE_WON
               else -> throw IllegalStateException()
             }
-      } else {
-        nextTurnState = NextTurnState.STALEMATE
-      }
+          } else {
+            NextTurnState.STALEMATE
+          }
     }
 
     if (STALEMATE_CONDITIONS.contains(
@@ -98,9 +97,8 @@ class Game {
     }
 
     val nextGameInfo = piece.tryMove(gameInfo, from, to, color) ?: return null
-    val checkInfoForCurrentPlayer = checkInfoForCurrentPlayer(nextGameInfo)
 
-    if (isInCheck(checkInfoForCurrentPlayer, nextGameInfo)) return null
+    if (isCurrentPlayerInCheck(nextGameInfo)) return null
 
     val turnState =
         when (nextTurnState) {
@@ -119,7 +117,8 @@ class Game {
         CheckInfo(gameInfo.whitePieces, gameInfo.blackPieces, Color.WHITE)
       }
 
-  private fun isInCheck(checkInfo: CheckInfo, gameInfo: GameInfo): Boolean {
+  private fun isCurrentPlayerInCheck(gameInfo: GameInfo): Boolean {
+    val checkInfo = checkInfoForCurrentPlayer(gameInfo)
     val kingToCheckForDanger =
         checkInfo.piecesToFindKingIn.asSequence().find { (_, piece) -> piece is King }?.key
             ?: throw IllegalStateException()
