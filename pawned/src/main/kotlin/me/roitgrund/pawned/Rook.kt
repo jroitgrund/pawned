@@ -1,5 +1,8 @@
 package me.roitgrund.pawned
 
+import me.roitgrund.pawned.api.Color
+import me.roitgrund.pawned.api.PieceType
+
 internal class Rook : Piece {
   override fun tryMove(gameInfo: GameInfo, from: Coord, to: Coord, color: Color): GameInfo? {
     val squaresToMovingLikeRook = from.squaresToMovingLikeRook(to) ?: return null

@@ -1,13 +1,7 @@
 package me.roitgrund.pawned
 
-enum class PieceType {
-  ROOK,
-  KNIGHT,
-  BISHOP,
-  QUEEN,
-  KING,
-  PAWN
-}
+import me.roitgrund.pawned.api.Color
+import me.roitgrund.pawned.api.PieceType
 
 internal interface Piece {
   fun tryMove(gameInfo: GameInfo, from: Coord, to: Coord, color: Color): GameInfo?
@@ -27,6 +21,7 @@ internal fun movePiece(
             Pair(gameInfo.whitePieces - from + Pair(to, piece), gameInfo.blackPieces - to)
         Color.BLACK ->
             Pair(gameInfo.whitePieces - to, gameInfo.blackPieces - from + Pair(to, piece))
+        else -> throw IllegalStateException()
       }
 
   return GameInfo(whitePieces, blackPieces, gameInfo.castlingInfo)

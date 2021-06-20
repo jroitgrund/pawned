@@ -3,6 +3,7 @@ package me.roitgrund.pawned
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import me.roitgrund.pawned.api.Color
 
 private val whiteRook = Rook()
 private val whitePawn = Pawn()

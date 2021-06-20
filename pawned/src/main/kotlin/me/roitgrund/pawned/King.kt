@@ -1,6 +1,8 @@
 package me.roitgrund.pawned
 
 import kotlin.math.abs
+import me.roitgrund.pawned.api.Color
+import me.roitgrund.pawned.api.PieceType
 
 internal class King : Piece {
   override fun tryMove(gameInfo: GameInfo, from: Coord, to: Coord, color: Color): GameInfo? {
@@ -120,6 +122,7 @@ internal class King : Piece {
               nextGameInfo.whitePieces,
               nextGameInfo.blackPieces,
               nextGameInfo.castlingInfo.moveBlackKing())
+      else -> throw IllegalArgumentException()
     }
   }
 

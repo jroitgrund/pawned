@@ -1,6 +1,9 @@
 dependencies {
-    api project(":pawned-api")
+    implementation project(":pawned")
     implementation libs.kotlin.stdlib
+    implementation libs.grpc.netty
+    implementation libs.slf4j.api
+    runtimeOnly libs.slf4j.simple
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
 }
 

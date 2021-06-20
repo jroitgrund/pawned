@@ -1,16 +1,26 @@
 rootProject.name = 'pawned-root'
 
 include 'pawned'
+include 'pawned-api'
 include 'pawned-desktop'
+include 'pawned-server'
 
 enableFeaturePreview('VERSION_CATALOGS')
 
 dependencyResolutionManagement {
     versionCatalogs {
         libs {
+            version('grpc', '1.38.1')
             version('kotlin', '1.5.10')
+            version('protobuf', '3.17.3')
             version('slf4j', '1.7.31')
+
+            alias('annotations').to('org.apache.tomcat', 'annotations-api').version('6.0.53')
+            alias('grpc-lite').to('io.grpc', 'grpc-protobuf-lite').versionRef('grpc')
+            alias('grpc-netty').to('io.grpc', 'grpc-netty').versionRef('grpc')
+            alias('grpc-stub').to('io.grpc', 'grpc-stub').versionRef('grpc')
             alias('kotlin-stdlib').to('org.jetbrains.kotlin', 'kotlin-stdlib-jdk8').versionRef('kotlin')
+            alias('protobuf-lite').to('com.google.protobuf', 'protobuf-javalite').versionRef('protobuf')
             alias('slf4j-api').to('org.slf4j', 'slf4j-api').versionRef('slf4j')
             alias('slf4j-simple').to('org.slf4j', 'slf4j-simple').versionRef('slf4j')
         }

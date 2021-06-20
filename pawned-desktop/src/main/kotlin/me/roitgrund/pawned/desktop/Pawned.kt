@@ -8,10 +8,10 @@ import java.awt.event.MouseListener
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import javax.swing.*
-import me.roitgrund.pawned.Color
 import me.roitgrund.pawned.Coord
 import me.roitgrund.pawned.Game
-import me.roitgrund.pawned.PieceType
+import me.roitgrund.pawned.api.Color
+import me.roitgrund.pawned.api.PieceType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -90,8 +90,8 @@ private class PawnedPanel(val game: Game) : JPanel(BorderLayout()) {
     val panel = this
     object : SwingWorker<Map<String, BufferedImage>, Void>() {
       override fun doInBackground(): Map<String, BufferedImage> {
-        return (PieceType.values().asSequence().map { this@PawnedPanel.fileName(it, Color.WHITE) } +
-                PieceType.values().asSequence().map { this@PawnedPanel.fileName(it, Color.BLACK) } +
+        return (PieceType.values().asSequence().map { fileName(it, Color.WHITE) } +
+                PieceType.values().asSequence().map { fileName(it, Color.BLACK) } +
                 sequenceOf("dark-square.png", "light-square.png"))
             .map { it to ImageIO.read(object {}::class.java.getResource("/$it")) }
             .toMap()
@@ -142,23 +142,23 @@ private class PawnedPanel(val game: Game) : JPanel(BorderLayout()) {
       }
     }
   }
-
-  private fun toOffset(coord: Coord): Pair<Int, Int> {
-    val (file, rank) = coord
-    val xOffset = file.code - 'a'.code
-    val yOffset = 8 - rank
-    return (xOffset to yOffset)
-  }
-
-  private fun toPixelCoord(coord: Coord): Pair<Int, Int> {
-    val (file, rank) = coord
-    val xOffset = file.code - 'a'.code
-    val yOffset = 8 - rank
-    val startX = xOffset * 128
-    val startY = yOffset * 128
-    return (startX to startY)
-  }
-
-  private fun fileName(pieceType: PieceType, color: Color) =
-      "${if(color == Color.BLACK) { "black"} else {"white"}}-${pieceType.name.lowercase()}.png"
 }
+
+private fun toOffset(coord: Coord): Pair<Int, Int> {
+  val (file, rank) = coord
+  val xOffset = file.code - 'a'.code
+  val yOffset = 8 - rank
+  return (xOffset to yOffset)
+}
+
+private fun toPixelCoord(coord: Coord): Pair<Int, Int> {
+  val (file, rank) = coord
+  val xOffset = file.code - 'a'.code
+  val yOffset = 8 - rank
+  val startX = xOffset * 128
+  val startY = yOffset * 128
+  return (startX to startY)
+}
+
+private fun fileName(pieceType: PieceType, color: Color) =
+    "${if(color == Color.BLACK) { "black"} else {"white"}}-${pieceType.name.lowercase()}.png"
