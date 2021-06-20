@@ -72,7 +72,7 @@ private class PawnedController private constructor(val panel: JPanel, val game: 
   fun attemptMove(from: Coord, to: Coord) {
     (object : SwingWorker<Boolean, Void>() {
           override fun doInBackground(): Boolean {
-            return game.attemptMove(from, to)
+            return game.playMove(from, to)
           }
 
           override fun done() {

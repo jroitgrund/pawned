@@ -48,3 +48,13 @@ data class Coord(val file: Char, val rank: Int) {
         .drop(1)
   }
 }
+
+private fun allCoords() =
+    (generateSequence('a') { it + 1 })
+        .take(8)
+        .flatMap { file ->
+          generateSequence(1) { it + 1 }.take(8).map { rank -> Coord(file, rank) }
+        }
+        .toSet()
+
+val ALL_COORDS = allCoords()
