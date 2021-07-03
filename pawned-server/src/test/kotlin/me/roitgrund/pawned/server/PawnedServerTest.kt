@@ -1,6 +1,7 @@
 package me.roitgrund.pawned.server
 
-import io.grpc.ManagedChannelBuilder
+import io.grpc.netty.GrpcSslContexts
+import io.grpc.netty.NettyChannelBuilder
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 import kotlin.test.Test
@@ -11,8 +12,14 @@ import me.roitgrund.pawned.api.*
 internal class PawnedServerTest {
   @Test
   fun test_server() {
+    val port = 5678
     CompletableFuture.runAsync(
-            { startServer() },
+            {
+              startServer(
+                  port,
+                  object {}::class.java.getResource("/localhost.pem").openStream(),
+                  object {}::class.java.getResource("/localhost-key-pkcs8.pem").openStream())
+            },
             Executors.newSingleThreadExecutor {
               val t = Thread(it)
               t.isDaemon = true
@@ -27,7 +34,12 @@ internal class PawnedServerTest {
 
     val pawnedService =
         PawnedServiceGrpc.newBlockingStub(
-            ManagedChannelBuilder.forAddress("localhost", 5678).usePlaintext().build())
+            NettyChannelBuilder.forAddress("localhost.roitgrund.me", port)
+                .sslContext(
+                    GrpcSslContexts.forClient()
+                        .trustManager(object {}::class.java.getResource("/ca.pem").openStream())
+                        .build())
+                .build())
 
     val id1 = pawnedService.newGame(NewGameRequest.getDefaultInstance()).id
     assertTrue(

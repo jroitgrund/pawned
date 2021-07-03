@@ -5,57 +5,93 @@ import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
+import java.awt.event.WindowEvent
+import java.awt.event.WindowListener
 import java.awt.image.BufferedImage
+import java.util.concurrent.atomic.AtomicReference
 import javax.imageio.ImageIO
-import javax.swing.*
+import javax.swing.BorderFactory
+import javax.swing.JFrame
+import javax.swing.JPanel
+import javax.swing.UIManager
+import kotlinx.coroutines.*
 import me.roitgrund.pawned.Coord
 import me.roitgrund.pawned.Game
 import me.roitgrund.pawned.api.Color
+import me.roitgrund.pawned.api.Pawned
 import me.roitgrund.pawned.api.PieceType
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 fun main() {
   UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
-  SwingUtilities.invokeLater(::createAndShowGUI)
+  createAndShowGUI()
 }
 
 private fun createAndShowGUI() {
   val game = Game()
   val frame = JFrame("Pawned")
-  val panel = PawnedPanel(game)
 
-  PawnedController.start(panel, game)
+  val scope =
+      MainScope() +
+          CoroutineExceptionHandler { _, e ->
+            LoggerFactory.getLogger(Pawned::class.java).error("Error", e)
+            frame.dispose()
+          }
+
+  val panel = PawnedPanel.start(scope, game)
+
+  PawnedController.start(scope, panel, game)
 
   frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
   frame.contentPane = panel
   frame.pack()
   frame.isVisible = true
+  frame.addWindowListener(
+      object : WindowListener {
+        override fun windowOpened(e: WindowEvent?) {}
+
+        override fun windowClosing(e: WindowEvent?) {}
+
+        override fun windowClosed(e: WindowEvent?) {
+          scope.cancel()
+        }
+
+        override fun windowIconified(e: WindowEvent?) {}
+
+        override fun windowDeiconified(e: WindowEvent?) {}
+
+        override fun windowActivated(e: WindowEvent?) {}
+
+        override fun windowDeactivated(e: WindowEvent?) {}
+      })
 }
 
-private class PawnedController private constructor(val panel: JPanel, val game: Game) {
+private class PawnedController
+private constructor(val scope: CoroutineScope, val panel: JPanel, val game: Game) {
   var from: Coord? = null
 
   companion object {
-    fun start(panel: JPanel, game: Game) {
-      val controller = PawnedController(panel, game)
+    fun start(scope: CoroutineScope, panel: JPanel, game: Game): PawnedController {
+      val controller = PawnedController(scope, panel, game)
       controller.init()
+      return controller
     }
-    val log: Logger = LoggerFactory.getLogger(PawnedController::class.java)
   }
 
   private fun init() {
     panel.addMouseListener(
         object : MouseListener {
           override fun mouseClicked(e: MouseEvent) {
-            val file = 'a' + e.x / 128
-            val rank = 8 - e.y / 128
-            val fromCoord = from
-            from = null
-            if (fromCoord == null) {
-              from = Coord(file, rank)
-            } else {
-              attemptMove(fromCoord, Coord(file, rank))
+            scope.launch(Dispatchers.IO) {
+              val file = 'a' + e.x / 128
+              val rank = 8 - e.y / 128
+              val fromCoord = from
+              from = null
+              if (fromCoord == null) {
+                from = Coord(file, rank)
+              } else {
+                attemptMove(fromCoord, Coord(file, rank))
+              }
             }
           }
 
@@ -69,43 +105,38 @@ private class PawnedController private constructor(val panel: JPanel, val game: 
         })
   }
 
-  fun attemptMove(from: Coord, to: Coord) {
-    (object : SwingWorker<Boolean, Void>() {
-          override fun doInBackground(): Boolean {
-            return game.playMove(from, to)
-          }
-
-          override fun done() {
-            if (get()) {
-              panel.repaint()
-            }
-          }
-        })
-        .execute()
+  suspend fun attemptMove(from: Coord, to: Coord) {
+    withContext(Dispatchers.IO) { game.playMove(from, to) }
+    withContext(Dispatchers.Main) { panel.repaint() }
   }
 }
 
-private class PawnedPanel(val game: Game) : JPanel(BorderLayout()) {
-  val imageLoader = run {
-    val panel = this
-    object : SwingWorker<Map<String, BufferedImage>, Void>() {
-      override fun doInBackground(): Map<String, BufferedImage> {
-        return (PieceType.values().asSequence().map { fileName(it, Color.WHITE) } +
-                PieceType.values().asSequence().map { fileName(it, Color.BLACK) } +
-                sequenceOf("dark-square.png", "light-square.png"))
-            .map { it to ImageIO.read(object {}::class.java.getResource("/$it")) }
-            .toMap()
-      }
-
-      override fun done() {
-        panel.repaint()
-      }
-    }
-  }
+private class PawnedPanel private constructor(val game: Game) : JPanel(BorderLayout()) {
+  val imageLoader: AtomicReference<Map<String, BufferedImage>> = AtomicReference()
 
   init {
     border = BorderFactory.createEmptyBorder(500, 500, 500, 500)
-    imageLoader.execute()
+  }
+
+  companion object {
+    fun start(scope: CoroutineScope, game: Game): PawnedPanel {
+      val panel = PawnedPanel(game)
+      scope.launch { panel.init() }
+      return panel
+    }
+  }
+
+  private suspend fun init() {
+    withContext(Dispatchers.IO) {
+      val values = PieceType.values().toSet() - PieceType.UNRECOGNIZED
+      imageLoader.set(
+          (values.asSequence().map { fileName(it, Color.WHITE) } +
+                  values.asSequence().map { fileName(it, Color.BLACK) } +
+                  sequenceOf("dark-square.png", "light-square.png"))
+              .map { it to ImageIO.read(object {}::class.java.getResource("/$it")) }
+              .toMap())
+    }
+    withContext(Dispatchers.Main) { repaint() }
   }
 
   override fun getPreferredSize() = Dimension(1024, 1024)
@@ -113,11 +144,7 @@ private class PawnedPanel(val game: Game) : JPanel(BorderLayout()) {
   override fun paintComponent(g: Graphics) {
     super.paintComponent(g)
 
-    if (!imageLoader.isDone) {
-      return
-    }
-
-    val images = imageLoader.get()
+    val images = imageLoader.get() ?: return
 
     for (file in 'a'..'h') {
       for (rank in 1..8) {

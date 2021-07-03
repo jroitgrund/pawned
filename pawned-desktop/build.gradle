@@ -1,6 +1,7 @@
 dependencies {
     implementation project(":pawned")
     implementation libs.kotlin.stdlib
+    implementation libs.kotlinx.coroutines.swing
     implementation libs.slf4j.api
     runtimeOnly libs.slf4j.simple
 

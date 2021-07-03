@@ -2,6 +2,7 @@ package me.roitgrund.pawned.server
 
 import io.grpc.ServerBuilder
 import io.grpc.stub.StreamObserver
+import java.io.InputStream
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicReference
@@ -10,13 +11,14 @@ import me.roitgrund.pawned.Coord
 import me.roitgrund.pawned.Game
 import me.roitgrund.pawned.api.*
 
-fun startServer() {
+fun startServer(port: Int, certificate: InputStream, signingKey: InputStream) {
   val waitingPlayer = AtomicReference<String>()
   val allPlayers = ConcurrentHashMap.newKeySet<String>()
   val whitePlayers = ConcurrentHashMap<String, Game>()
   val blackPlayers = ConcurrentHashMap<String, Game>()
 
-  ServerBuilder.forPort(5678)
+  ServerBuilder.forPort(port)
+      .useTransportSecurity(certificate, signingKey)
       .addService(
           object : PawnedServiceGrpc.PawnedServiceImplBase() {
             override fun newGame(

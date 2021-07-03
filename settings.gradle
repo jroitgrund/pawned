@@ -20,6 +20,7 @@ dependencyResolutionManagement {
             alias('grpc-netty').to('io.grpc', 'grpc-netty').versionRef('grpc')
             alias('grpc-stub').to('io.grpc', 'grpc-stub').versionRef('grpc')
             alias('kotlin-stdlib').to('org.jetbrains.kotlin', 'kotlin-stdlib-jdk8').versionRef('kotlin')
+            alias('kotlinx-coroutines-swing').to('org.jetbrains.kotlinx', 'kotlinx-coroutines-swing').version('1.5.0')
             alias('protobuf-lite').to('com.google.protobuf', 'protobuf-javalite').versionRef('protobuf')
             alias('slf4j-api').to('org.slf4j', 'slf4j-api').versionRef('slf4j')
             alias('slf4j-simple').to('org.slf4j', 'slf4j-simple').versionRef('slf4j')
