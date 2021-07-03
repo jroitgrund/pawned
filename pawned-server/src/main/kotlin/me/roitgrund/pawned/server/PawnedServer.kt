@@ -1,7 +1,6 @@
 package me.roitgrund.pawned.server
 
 import io.grpc.ServerBuilder
-import io.grpc.stub.StreamObserver
 import java.io.InputStream
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -20,11 +19,8 @@ fun startServer(port: Int, certificate: InputStream, signingKey: InputStream) {
   ServerBuilder.forPort(port)
       .useTransportSecurity(certificate, signingKey)
       .addService(
-          object : PawnedServiceGrpc.PawnedServiceImplBase() {
-            override fun newGame(
-                request: NewGameRequest,
-                responseObserver: StreamObserver<NewGameResponse>
-            ) {
+          object : PawnedServiceGrpcKt.PawnedServiceCoroutineImplBase() {
+            override suspend fun newGame(request: NewGameRequest): NewGameResponse {
               val id = UUID.randomUUID().toString()
               allPlayers.add(id)
               val waitingId =
@@ -47,14 +43,10 @@ fun startServer(port: Int, certificate: InputStream, signingKey: InputStream) {
                 }
               }
 
-              responseObserver.onNext(NewGameResponse.newBuilder().setId(id).build())
-              responseObserver.onCompleted()
+              return NewGameResponse.newBuilder().setId(id).build()
             }
 
-            override fun getGame(
-                request: GetGameRequest,
-                responseObserver: StreamObserver<GameResponse>
-            ) {
+            override suspend fun getGame(request: GetGameRequest): GameResponse {
               if (!allPlayers.contains(request.id)) {
                 throw IllegalArgumentException()
               }
@@ -63,25 +55,17 @@ fun startServer(port: Int, certificate: InputStream, signingKey: InputStream) {
               val blackGame = blackPlayers[request.id]
 
               if (whiteGame == null && blackGame == null) {
-                responseObserver.onNext(
-                    GameResponse.newBuilder()
-                        .setWaitingForGame(WaitingForGame.getDefaultInstance())
-                        .build())
-                responseObserver.onCompleted()
-                return
+                return GameResponse.newBuilder()
+                    .setWaitingForGame(WaitingForGame.getDefaultInstance())
+                    .build()
               }
 
               val (game, color) = getGameAndColor(whiteGame, blackGame)
 
-              responseObserver.onNext(
-                  GameResponse.newBuilder().setGameInfo(gameInfo(game, color)).build())
-              responseObserver.onCompleted()
+              return GameResponse.newBuilder().setGameInfo(gameInfo(game, color)).build()
             }
 
-            override fun move(
-                request: MoveRequest,
-                responseObserver: StreamObserver<GameResponse>
-            ) {
+            override suspend fun move(request: MoveRequest): GameResponse {
               if (!allPlayers.contains(request.id)) {
                 throw IllegalArgumentException()
               }
@@ -91,9 +75,7 @@ fun startServer(port: Int, certificate: InputStream, signingKey: InputStream) {
 
               game.playMove(Coord(request.fromCoord), Coord(request.toCoord))
 
-              responseObserver.onNext(
-                  GameResponse.newBuilder().setGameInfo(gameInfo(game, color)).build())
-              responseObserver.onCompleted()
+              return GameResponse.newBuilder().setGameInfo(gameInfo(game, color)).build()
             }
           })
       .build()

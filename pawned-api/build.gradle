@@ -5,6 +5,9 @@ protobuf {
         grpc {
             artifact = "io.grpc:protoc-gen-grpc-java:${libs.versions.grpc.get()}"
         }
+        grpckt {
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:${libs.versions.grpckotlin.get()}:jdk7@jar"
+        }
     }
     protoc {
         artifact = "com.google.protobuf:protoc:${libs.versions.protobuf.get()}"
@@ -26,9 +29,8 @@ protobuf {
 }
 
 dependencies {
-    api libs.protobuf.lite
+    api libs.grpc.kotlin.stub
     api libs.grpc.lite
-    api libs.grpc.stub
     compileOnly libs.annotations
 }
 
@@ -38,5 +40,10 @@ sourceSets {
             srcDirs 'build/generated/source/proto/main/grpc'
             srcDirs 'build/generated/source/proto/main/java'
         }
+        kotlin {
+            srcDirs 'build/generated/source/proto/main/grpckt'
+        }
     }
 }
+
+tasks.ktfmtCheckMain.enabled = false

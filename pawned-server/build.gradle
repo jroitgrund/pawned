@@ -4,7 +4,9 @@ dependencies {
     implementation libs.grpc.netty
     implementation libs.slf4j.api
     runtimeOnly libs.slf4j.simple
+
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    testImplementation libs.kotlinx.coroutinesjvm
 }
 
 test {
